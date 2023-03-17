@@ -1,0 +1,68 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<Good>
+
+    <h1>Goods page</h1>
+
+    <form method="GET" asp-controller="Good" asp-action="Create">
+        <button type="submit" class="btn btn-primary">Create Good</button>
+    </form><br />
+   @* Sort by Category*@
+<div class="dropdown d-none d-sm-inline-block form-inline">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Choose Category
+    </button>
+    <ul class="dropdown-menu dropdown-menu-left">
+        @foreach (Category item in ViewBag.Categories)
+        {
+            <form method="POST">
+                <li><button class="dropdown-item" asp-action="Index" asp-controller="Good" asp-route-id="@item.Id">@item.Title</button></li>
+            </form>
+        }
+    </ul>
+</div>
+   
+    @*Find by title*@
+<form method="POST" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+    <div class="input-group">
+        <input name="searchString" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+               aria-label="Search" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button class="btn btn-primary" asp-action="IndexSearch" asp-controller="Good">
+                <i class="fas fa-search fa-sm">Search</i>
+            </button>
+
+        </div>
+    </div>
+</form>
+
+    <table class="table">
+        <tr>
+            <td>Id</td>
+            <td>Title</td>
+            <td>Price</td>
+            <td>Category</td>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Title</td>
+                <td>@item.Price</td>
+                <td>@((ViewBag.Categories as List<Category>).Where(c=>c.Id==item.CategoryId).First().Title)</td>
+                <td>
+                    <form method="GET" asp-controller="Good" asp-action="Edit" asp-route-id="@item.Id">
+                        <button type="submit" class="btn btn-outline-secondary">Edit</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST" asp-controller="Good" asp-action="Delete" asp-route-id="@item.Id">
+                        <button type="submit" class="btn btn-outline-warning">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>

@@ -1,0 +1,19 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Good
+
+<h1>Good Edit</h1>
+
+<form method="POST" asp-controller="Good" asp-action="Edit" asp-route-id="@Model.Id">
+    <labe>Id</labe><br />
+    <input asp-for="Id"/><br />
+    <labe>Title</labe><br />
+    <input asp-for="Title" /><br />
+    <labe>Price</labe><br />
+    <input asp-for="Price" /><br />
+    <select asp-for="CategoryId" class="form-check control" asp-items="ViewBag.Categories">Categories</select>
+    <button type="submit" class="btn btn-primary">Edit</button>
+</form>

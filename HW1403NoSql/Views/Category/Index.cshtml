@@ -1,0 +1,40 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    
+}
+@model List<Category>
+
+<h1>Categories</h1>
+
+<div class="row">
+    <form method="GET" asp-controller="Category" asp-action="Create">
+        <button type="submit" class="btn btn-primary">Create Category</button>
+    </form>
+
+    <table class="table-borderless">
+         <tr>
+             <td>Id</td>
+             <td>Title</td>
+         </tr>
+        
+         @foreach (var item in Model)
+         {
+             <tr>
+                 <td>@item.Id</td>
+                 <td>@item.Title</td>
+                 <td>
+                     <form method="GET" asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id">
+                         <button type="submit" class="btn btn-outline-secondary">Edit</button>
+                     </form>
+                 </td>
+                 <td>
+                     <form method="GET" asp-controller="Category" asp-action="Delete" asp-route-id="@item.Id">
+                         <button type="submit" class="btn btn-outline-warning">Delete</button>
+                     </form>
+                 </td>
+             </tr>
+         }
+    </table>
+</div>
