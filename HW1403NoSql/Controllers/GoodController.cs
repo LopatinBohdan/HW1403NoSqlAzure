@@ -1,8 +1,13 @@
-﻿using HW1403NoSql.Models;
+﻿using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
+using HW1403NoSql.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Azure.WebJobs.Description;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace HW1403NoSql.Controllers
 {
@@ -10,9 +15,22 @@ namespace HW1403NoSql.Controllers
     {
         MyContext db;
         List<Good> goods;
+        QueueServiceClient serviceClient;
+        QueueClient queue;
+        public static string connStr= "DefaultEndpointsProtocol=https;AccountName=lopatinqueue;AccountKey=to1FWzNyEc7oJWtOD+4dhRNtBbAlMC0rAH6l/zmk/GowelTadS0AtaUBlM1pwPdES/NJO1hhrNNX+ASt/Kw3wg==;EndpointSuffix=core.windows.net";
+        public static string queueName= "lopatinqueue";
+        string path = "log.txt";
+
         public GoodController(MyContext db)
         {
             this.db = db;
+            //CreateQueue();
+        }
+
+        public void CreateQueue(string connStr, string queueName)
+        {
+            serviceClient = new QueueServiceClient(connStr);
+            queue = serviceClient.CreateQueue(queueName);
         }
 
         public async Task<IActionResult> Index()
@@ -93,7 +111,34 @@ namespace HW1403NoSql.Controllers
             }
             return NotFound();
         }
-
-
+        //Buy Good
+        [HttpPost]
+        public async Task<IActionResult> Buy(int id)
+        {
+            if (id != null){
+                Good good = await db.Goods.FindAsync(id);
+                if (good != null)
+                {
+                    serviceClient = new QueueServiceClient(connStr);
+                    try
+                    {
+                        queue = await serviceClient.CreateQueueAsync(queueName);
+                    }
+                    catch (Exception)
+                    {
+                        queue = serviceClient.GetQueueClient(queueName);
+                    }
+                    
+                    string mess = System.Text.Json.JsonSerializer.Serialize(good);
+                    SendReceipt receipt = await queue.SendMessageAsync(mess);
+                    using (StreamWriter sw=new StreamWriter(path, true))
+                    {
+                        sw.WriteLine(mess+ " was bought...");
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+            return NotFound();
+        }
     }
 }

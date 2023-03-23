@@ -53,6 +53,11 @@
                 <td>@item.Title</td>
                 <td>@item.Price</td>
                 <td>@((ViewBag.Categories as List<Category>).Where(c=>c.Id==item.CategoryId).First().Title)</td>
+            <td>
+            <form method="POST" asp-controller="Good" asp-action="Buy" asp-route-id="@item.Id">
+                <button type="submit" class="btn btn-success">Buy</button>
+            </form>
+            </td>
                 <td>
                     <form method="GET" asp-controller="Good" asp-action="Edit" asp-route-id="@item.Id">
                         <button type="submit" class="btn btn-outline-secondary">Edit</button>
